@@ -1,10 +1,9 @@
+/*******************************************************************************
+Description:  This unit test tests the  fullDeckCount() function in 
+dominion.c
 
-/*
-	Description:  This unit test tests the  fullDeckCount() function in 
-	dominion.c
-
-Returns the count of a specific card in a specific player's discard, deck,
-and hand
+fullDeckCount() Function: Returns the count of a specific card in a 
+specific player's discard, deck, and hand
 
 int fullDeckCount(int player, int card, struct gameState *state) {
   int i;
@@ -27,8 +26,7 @@ int fullDeckCount(int player, int card, struct gameState *state) {
 
   return count;
 }
-
-*/
+*******************************************************************************/
 
 #include "dominion.h"
 #include "dominion_helpers.h"
@@ -36,6 +34,8 @@ int fullDeckCount(int player, int card, struct gameState *state) {
 #include <stdio.h>
 #include <assert.h>
 #include "rngs.h"
+
+
 
 void assertTrue(int a, int b) {
 	if (a == b)
@@ -61,29 +61,35 @@ int main() {
 	initializeGame(numPlayers, k, randomSeed, &test);
 
 
-	printf("*************TESTING fullDeckCount*************");
+	printf("*************TESTING fullDeckCount*************\n\n");
 
-	printf("First test:  Testing Returned Value With No Cards in Deck\n");
-	//all decks are full of same card
-
+	printf("First test:  Testing Full Starting Deck With Zero Value\n");
 	count=fullDeckCount(player, card, &test);
-	//assertTrue(count, 0);
-	//printf("Expected return value=0    Actual value=%d\n", count);
+	assertTrue(count, 0);
+	printf("Expected return value=0    Actual value=%d\n", count);
 
-	//printf("Second test:  Testing value with Cards in Deck");
+	printf("Second test:  Testing Full Starting Deck for Copper\n");
+	count=fullDeckCount(player, copper, &test);
+	assertTrue(count, 7);
+	printf("Expected return value=7  Actual value=%d\n", count);
 
-	printf("Expected return value=??   Actual value=%d\n", count);
+	printf("Third test:  Testing Full Starting Deck for Estate Card\n");
+	count=fullDeckCount(player, estate, &test);
+	assertTrue(count, 3);
+	printf("Expected return value=3   Actual value=%d\n", count);
 
-	
-	printf("Third test:  Testing value with Cards in Hand");
-	printf("Expected return value=   Actual value=%d\n", count);
+	printf("Fourth test:  Testing Full Deck for Card Not Present\n");
+	count=fullDeckCount(player, adventurer, &test);
+	assertTrue(count, 0);
+	printf("Expected return value=0   Actual value=%d\n", count);
 
+	printf("Fifth test:  Testing for same Card After Adding it to Hand\n");
+	test.hand[ player ][ test.handCount[player] ] = adventurer;
+        test.handCount[player]++;
+	count=fullDeckCount(player, adventurer, &test);
+	assertTrue(count, 1);
+	printf("Expected return value=1   Actual value=%d\n", count);
 
-	printf("Fourth test:  Testing value with Cards in Discard");
-	printf("Expected return value=   Actual value=%d\n", count);
-
-    
-
-
+    	return 0;
 }
 
