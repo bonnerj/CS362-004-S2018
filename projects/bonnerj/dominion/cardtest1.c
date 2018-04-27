@@ -9,15 +9,7 @@
 *	If you have to shuffle during, then do so.  Don't shuffle in the revealed
 *	cards as these do not go to the Discard until finished revealing cards."
 
-
- 
-* void adventurerCard(int drawntreasure, struct gameState *state, int handPos, 
-* int z, int currentPlayer)
-*	drawntreasure=0, z=0 (counter for tempHand) - set from within cardeffect()
-*  currentPlayer - state->whoseTurn is initialized to 0 when game is initialized 
-*  and set from within cardeffect()
-
-From Code:
+*	From Code:
 	void adventurerCard(int drawntreasure, struct gameState *state, int handPos, 
 	        int z, int currentPlayer)
 	{    
@@ -47,6 +39,10 @@ From Code:
 		z=z-1;
 	      }
 	}
+* 	Notes: 
+	drawntreasure=0, z=0 (counter for tempHand) - set from within cardeffect()
+  	currentPlayer - state->whoseTurn is initialized to 0 when game is initialized 
+  	and set from within cardeffect()
 *****************************************************************************/
 
 #include "dominion.h"

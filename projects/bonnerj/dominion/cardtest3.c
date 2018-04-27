@@ -13,7 +13,7 @@
 		      //discard card from hand
 		      discardCard(handPos, currentPlayer, state, 0);
 		}
-*/
+*******************************************************************************/
 
 #include "dominion.h"
 #include "dominion_helpers.h"
