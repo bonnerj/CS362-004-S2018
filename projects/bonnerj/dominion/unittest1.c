@@ -34,7 +34,7 @@ int fullDeckCount(int player, int card, struct gameState *state) {
 #include <stdio.h>
 #include <assert.h>
 #include "rngs.h"
-
+#include "interface.h"
 
 
 void assertTrue(int a, int b) {
@@ -63,6 +63,11 @@ int main() {
 
 	printf("*************TESTING fullDeckCount*************\n\n");
 
+	printf("Current Full Deck: \n");
+	printDeck(player, &test);
+	printHand(player, &test);
+	printDiscard(player, &test);
+
 	printf("First test:  Testing Full Starting Deck With Zero Value\n");
 	count=fullDeckCount(player, card, &test);
 	assertTrue(count, 0);
@@ -83,10 +88,21 @@ int main() {
 	assertTrue(count, 0);
 	printf("Expected return value=0   Actual value=%d\n", count);
 
-	printf("Fifth test:  Testing for same Card After Adding it to Hand\n");
-	test.hand[ player ][ test.handCount[player] ] = adventurer;
-        test.handCount[player]++;
+	printf("Fifth test:  Testing for same Card After Adding it to Deck\n");
+	test.deck[ player ][ test.deckCount[player] ] = adventurer;
+        test.deckCount[player]++;
 	count=fullDeckCount(player, adventurer, &test);
+	printf("New Deck: \n");
+	printDeck(player, &test);
+	assertTrue(count, 1);
+	printf("Expected return value=1   Actual value=%d\n", count);
+
+	printf("Sixth test: Testing after Card Added to Discard\n");
+	test.discard[ player][test.discardCount[player] ] = smithy;
+	test.discardCount[player]++;
+	count=fullDeckCount(player, adventurer, &test);
+	printf("New Discard: \n");
+	printDiscard(player, &test);
 	assertTrue(count, 1);
 	printf("Expected return value=1   Actual value=%d\n", count);
 

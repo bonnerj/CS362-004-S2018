@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "rngs.h"
+#include "interface.h"
 
 int allPassed=1;
 int failedTests=0;
@@ -32,12 +33,13 @@ int main() {
 
 	printf("First test:  Testing Return Value with Game Just Initialized\n");
 	gameOver=isGameOver(&test);
+	printSupply(&test);
 	assertTrue(0, gameOver);
 	printf("Expected return value=0   Actual value=%d\n", gameOver);
 
-
 	printf("Second test:  Testing Return Value with Province Cards Empty\n");
 	test.supplyCount[province]=0;
+	printSupply(&test);
 	gameOver=isGameOver(&test);
 	assertTrue(1, gameOver);
 	printf("Expected return value=1  Actual value=%d\n", gameOver);
@@ -45,6 +47,7 @@ int main() {
 	printf("Third test:  Testing Return Value with One Supply Pile at 0\n");
 	test.supplyCount[province]=1;
 	test.supplyCount[0] = 0;
+	printSupply(&test);
 	gameOver=isGameOver(&test);	
 	assertTrue(0, gameOver);
 	printf("Expected return value=0  Actual value=%d\n", gameOver);
@@ -53,6 +56,7 @@ int main() {
 	test.supplyCount[province]=1;
 	test.supplyCount[0] = 0;
 	test.supplyCount[1] = 0;
+	printSupply(&test);
 	gameOver=isGameOver(&test);	
 	assertTrue(0, gameOver);
 	printf("Expected return value=0  Actual value=%d\n", gameOver);
@@ -62,6 +66,7 @@ int main() {
 	test.supplyCount[0] = 0;
 	test.supplyCount[1] = 0;
 	test.supplyCount[2] = 0;
+	printSupply(&test);
 	gameOver=isGameOver(&test);	
 	assertTrue(1, gameOver);
 	printf("Expected return value=0  Actual value=%d\n", gameOver);

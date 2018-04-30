@@ -147,7 +147,7 @@ int main() {
 
     printf("\n	TEST #7: Testing score after adding 10 adventurer cards and one gardens card to hand.\n");
     //adding 10 cards worth 0 victory points to test that gardens will add +1  
-    printf("	Adding 10 gardens cards...\n");
+    printf("	Adding 10 adventurer cards...\n");
     for (i=0; i<10; i++)
     {
     	test.discard[ player ][ test.discardCount[player] ] = k[1];

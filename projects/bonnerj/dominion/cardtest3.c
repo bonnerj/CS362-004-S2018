@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "rngs.h"
+#include "interface.h"
 
 int allPassed=1;
 int failedTests=0;
@@ -110,38 +111,122 @@ int main() {
 
 	printf("*************TESTING Smithy Card *************\n\n"); 
 
+	printf(" ROUND ONE: 3 cards in deck to draw from\n");
 	printf("	Test #1: Testing Correct Number of Cards in Player 1's Hand\n");
-    //should be 1 to start
-    before=origTest.handCount[player1];
+        //should be 1 to start
+        before=origTest.handCount[player1];
 	printf("	Cards in hand before playing Smithy: %d\n", before);
+	printHand(player1, &origTest);
 	after=postTest.handCount[player1];
 	//should be 3; 1 to start +3 drawn and -1 smithy played
 	expected=before + 3 - 1;
 	assertTrue(after, expected);
 	printf("	Cards in hand after playing Smithy:\n");
-	printf("			Expected=%d 	Actual=%d\n", expected, after);
+	printHand(player1, &postTest);
+	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
 
 	printf("	Test #2: Testing Correct Number of Cards in Player 1's Played Cards\n");
-    //should be 0 to start
-    before=origTest.playedCardCount;
+        //should be 0 to start
+        before=origTest.playedCardCount;
 	printf("	Cards in played cards before playing Smithy: %d\n", before);
 	after=postTest.playedCardCount;
 	//should be 1 - smithy played
 	expected=before + 1;
 	assertTrue(after, expected);
 	printf("	Cards in played cards after playing Smithy:\n");
-	printf("			Expected=%d 	Actual=%d\n", expected, after);
+	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
 
-	printf("	Test #3: Testing Correct Number of Cards in Player 1's Deck\n");
-    //should be 3 to start
-    before=origTest.deckCount[player1];
+	printf("	Test #3: Testing Correct Number of Cards in Player 1's Discarded Cards\n");
+        //should be 0 to start
+        before=origTest.discardCount[player1];
+	printf("	Cards in discarded cards before playing Smithy: %d\n", before);
+	printDiscard(player1, &origTest);
+	after=postTest.discardCount[player1];
+	//should be 0 - according to rules, discarding played cards happens when turn ends
+	expected=before;
+	assertTrue(after, expected);
+	printf("	Cards in discarded cards after playing Smithy:\n");
+	printDiscard(player1, &postTest);
+	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+
+	printf("	Test #4: Testing Correct Number of Cards in Player 1's Deck\n");
+        //should be 3 to start
+        before=origTest.deckCount[player1];
 	printf("	Cards in deck before playing Smithy: %d\n", before);
+	printDeck(player1, &origTest);
 	after=postTest.deckCount[player1];
 	//should be 0 - drew 3 and started with 3 in deck
 	expected=before - 3;
 	assertTrue(after, expected);
 	printf("	Cards in deck after playing Smithy:\n");
-	printf("			Expected=%d 	Actual=%d\n", expected, after);
+	printDeck(player1, &postTest);
+	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+
+	
+	printf(" ROUND TWO: Only 1 card in deck to draw from\n");
+	clearDeck(&origTest, player1);
+
+    	//adding smithy to hand
+    	origTest.hand[player1][0] = smithy;
+	origTest.handCount[player1]++;
+
+	//adding one card to deck
+	origTest.deck[player1][0] = adventurer;
+	origTest.deckCount[player1]++;
+
+	postTest = origTest;
+
+	cardEffect(smithy, choice1, choice2, choice3, &postTest, handPos, &bonus);
+
+	printf("	Test #1: Testing Correct Number of Cards in Player 1's Hand\n");
+        //should be 1 to start
+        before=origTest.handCount[player1];
+	printf("	Cards in hand before playing Smithy: %d\n", before);
+	printHand(player1, &origTest);
+	after=postTest.handCount[player1];
+	//should be 1; 1 to start +1 drawn and -1 smithy played
+	expected=before + 1 - 1;
+	assertTrue(after, expected);
+	printf("	Cards in hand after playing Smithy:\n");
+	printHand(player1, &postTest);
+	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+
+	printf("	Test #2: Testing Correct Number of Cards in Player 1's Played Cards\n");
+        //should be 0 to start
+        before=origTest.playedCardCount;
+	printf("	Cards in played cards before playing Smithy: %d\n", before);
+	after=postTest.playedCardCount;
+	//should be 1 - smithy played
+	expected=before + 1;
+	assertTrue(after, expected);
+	printf("	Cards in played cards after playing Smithy:\n");
+	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+
+	printf("	Test #3: Testing Correct Number of Cards in Player 1's Discarded Cards\n");
+        //should be 0 to start
+        before=origTest.discardCount[player1];
+	printf("	Cards in discarded cards before playing Smithy: %d\n", before);
+	printDiscard(player1, &origTest);	
+	after=postTest.discardCount[player1];
+	//should be 0 - according to rules, discarding played cards happens when turn ends
+	expected=before;
+	assertTrue(after, expected);
+	printf("	Cards in discarded cards after playing Smithy:\n");
+	printDiscard(player1, &postTest);
+	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+
+	printf("	Test #4: Testing Correct Number of Cards in Player 1's Deck\n");
+        //should be 1 to start
+        before=origTest.deckCount[player1];
+	printf("	Cards in deck before playing Smithy: %d\n", before);
+	printDeck(player1, &origTest);
+	after=postTest.deckCount[player1];
+	//should be 0 - drew 1 and started with 1 in deck
+	expected=before-1;
+	assertTrue(after, expected);
+	printf("	Cards in deck after playing Smithy:\n");
+	printDeck(player1, &postTest);
+	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
 
 	if(allPassed)
                 printf("ALL TESTS PASSED!\n");

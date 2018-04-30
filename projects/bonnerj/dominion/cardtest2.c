@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "rngs.h"
+#include "interface.h"
 
 int allPassed=1;
 int failedTests=0;
@@ -93,67 +94,125 @@ int main() {
     clearDeck(&origTest, player1);
 
     origTest.hand[player1][0] = great_hall;
-	origTest.handCount[player1]++;
+    origTest.handCount[player1]++;
+
+    origTest.deck[player1][0] = adventurer;
+    origTest.deckCount[player1]++;
 
 
-	origTest.deck[player1][0] = adventurer;
-	origTest.deckCount[player1]++;
+    postTest = origTest;
 
+    cardEffect(great_hall, choice1, choice2, choice3, &postTest, handPos, &bonus);
 
-	postTest = origTest;
-
-	cardEffect(great_hall, choice1, choice2, choice3, &postTest, handPos, &bonus);
-
-	printf("*************TESTING Great Hall *************\n\n"); 
+    printf("*************TESTING Great Hall *************\n\n"); 
 
     printf("	Test #1: Testing Correct Number of Cards in Player 1's Hand\n");
     //should be 1
     before=origTest.handCount[player1];
-	printf("	Cards in hand before playing Great Hall: %d\n", before);
-	after=postTest.handCount[player1];
-	//should be 1; 1 to start +1 drawn and -1 adventurer played
-	expected=before + 1 - 1;
-	assertTrue(after, expected);
-	printf("	Cards in hand after playing Great Hall:\n");
-	printf("			Expected=%d 	Actual=%d\n", expected, after);
+    printf("	Cards in hand before playing Great Hall: %d\n", before);
+    printHand(player1, &origTest);
+    after=postTest.handCount[player1];
+    //should be 1; 1 to start +1 drawn and -1 adventurer played
+    expected=before + 1 - 1;
+    assertTrue(after, expected);
+    printf("	Cards in hand after playing Great Hall:\n");
+    printHand(player1, &postTest);
+    printf("			Expected=%d 	Actual=%d\n\n", expected, after);
 
-	printf("	Test #2: Testing Correct Number of Cards in Player 1's Played Cards\n");
+    printf("	Test #2: Testing Correct Number of Cards in Player 1's Played Cards\n");
     //should be 0
     before=origTest.playedCardCount;
-	printf("	Cards in discard before playing Great Hall: %d\n", before);
-	after=postTest.playedCardCount;
-	//should be 1 - great_hall played
-	expected=before + 1;
-	assertTrue(after, expected);
-	printf("	Cards in discard after playing Great Hall:\n");
-	printf("			Expected=%d 	Actual=%d\n", expected, after);
+    printf("	Cards in played cards before playing Great Hall: %d\n", before);
+    after=postTest.playedCardCount;
+    //should be 1 - great_hall played
+    expected=before + 1;
+    assertTrue(after, expected);
+    printf("	Cards in played cards after playing Great Hall:\n");
+    printf("			Expected=%d 	Actual=%d\n\n", expected, after);
 
-	printf("	Test #3: Testing Correct Number of Cards in Player 1's Deck\n");
+    printf("	Test #3: Testing Correct Number of Cards in Player 1's Discarded Cards\n");
+    //should be 0
+    before=origTest.discardCount[player1];
+    printf("	Cards in discarded cards before playing Great Hall: %d\n", before);
+    printDeck(player1, &origTest);
+    after=postTest.discardCount[player1];
+    //should be 0 - cards discarded at end of turn according to rules
+    expected=before;
+    assertTrue(after, expected);
+    printf("	Cards in discarded cards after playing Great Hall:\n");
+    printDeck(player1, &postTest);
+    printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+    
+    printf("	Test #4: Testing Correct Number of Cards in Player 1's Deck\n");
     //should be 1
     before=origTest.deckCount[player1];
-	printf("	Cards in deck before playing Great Hall: %d\n", before);
-	after=postTest.deckCount[player1];
-	//should be 0 - the only card in the deck was drawn
-	expected=before - 1;
-	assertTrue(after, expected);
-	printf("	Cards in deck after playing Great Hall:\n");
-	printf("			Expected=%d 	Actual=%d\n", expected, after);
+    printf("	Cards in deck before playing Great Hall: %d\n", before); 
+    printDeck(player1, &origTest);
+    after=postTest.deckCount[player1];
+    //should be 0 - the only card in the deck was drawn
+    expected=before - 1;
+    assertTrue(after, expected);
+    printf("	Cards in deck after playing Great Hall:\n");
+    printDeck(player1, &postTest);
+    printf("			Expected=%d 	Actual=%d\n\n", expected, after);
 
-	printf("	Test #4: Testing Correct Number of Actions added\n");
+    printf("	Test #5: Testing Correct Number of Actions added\n");
     //should be + 1
     before=origTest.numActions;
-	printf("	Number of actions before playing Great Hall: %d\n", before);
-	after=postTest.numActions;
-	expected=origTest.numActions+1;
-	assertTrue(after, expected);
-	printf("	Number of actions after playing Great Hall:\n");
-	printf("			Expected=%d 	Actual=%d\n", expected, after);
+    printf("	Number of actions before playing Great Hall: %d\n", before);
+    after=postTest.numActions;
+    expected=origTest.numActions+1;
+    assertTrue(after, expected);
+    printf("	Number of actions after playing Great Hall:\n");
+    printf("			Expected=%d 	Actual=%d\n\n", expected, after);
 
 
-	if(allPassed)
-                printf("ALL TESTS PASSED!\n");
-    	else
-                printf("%d OF THE TESTS HAVE FAILED\n", failedTests);
+    printf("	Test #6:  Testing with No Cards in Deck to Draw From\n");
+
+    clearDeck(&origTest, player1);
+
+    origTest.hand[player1][0] = great_hall;
+    origTest.handCount[player1]++;
+
+    postTest = origTest;
+
+    cardEffect(great_hall, choice1, choice2, choice3, &postTest, handPos, &bonus);
+
+    //should be 1
+    before=origTest.handCount[player1];
+    printf("	Cards in hand before playing Great Hall: %d\n", before);
+    printHand(player1, &origTest);
+    after=postTest.handCount[player1];
+    //should be 0; -1 adventurer played
+    expected=before - 1;
+    assertTrue(after, expected);
+    printf("	Cards in hand after playing Great Hall:\n");
+    printHand(player1, &postTest);
+    printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+
+    before=origTest.deckCount[player1];
+    printf("	Cards in deck before playing Great Hall: %d\n", before); 
+    printDeck(player1, &origTest);
+    after=postTest.deckCount[player1];
+    expected=before;
+    assertTrue(after, expected);
+    printf("	Cards in deck after playing Great Hall:\n");
+    printDeck(player1, &postTest);
+    printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+    
+    //should be + 1
+    before=origTest.numActions;
+    printf("	Number of actions before playing Great Hall: %d\n", before);
+    after=postTest.numActions;
+    expected=origTest.numActions+1;
+    assertTrue(after, expected);
+    printf("	Number of actions after playing Great Hall:\n");
+    printf("			Expected=%d 	Actual=%d\n\n", expected, after);
+    
+    if(allPassed)
+	printf("ALL TESTS PASSED!\n");
+    else
+	printf("%d OF THE TESTS HAVE FAILED\n", failedTests);
 
     return 0;
 }
