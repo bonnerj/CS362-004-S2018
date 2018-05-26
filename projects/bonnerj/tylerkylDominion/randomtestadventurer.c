@@ -157,7 +157,7 @@ int main () {
 		}
             }
         } 
-
+	updateCoins(player, &G, 0);
         randomTest(player, handPos, treasures, &G);
     }
      

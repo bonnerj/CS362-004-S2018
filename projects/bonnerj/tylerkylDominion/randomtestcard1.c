@@ -64,9 +64,14 @@ void randomTest(int p, int handPos, struct gameState *origTest) {
         expected = before + 2;
     else if (origTest->deckCount[p] == 2) //2 cards in deck to draw from
         expected = before + 1;
-    else if (origTest->deckCount[p] < 2) //1 or 0 cards in deck
+    else if (origTest->deckCount[p] == 1) //1 card in deck to draw from
         expected = before;
-    assertTrue(expected, after, 1); 
+    else if (origTest->deckCount[p] == 0) //0 cards in deck to draw from 
+        expected = before - 1;
+    if (!assertTrue(expected, after, 1)) { 
+	        printf("FAILED HAND COUNT\n");
+	        printFailedState(p, origTest);
+    }
 
     //testing 3 cards taken from deck (-3 drawn)
     before = origTest->deckCount[p];
@@ -79,8 +84,10 @@ void randomTest(int p, int handPos, struct gameState *origTest) {
         expected = before - 1;
     else //0 cards in deck
         expected = before; 
-    assertTrue(expected, after, 2);
-
+    if (!assertTrue(expected, after, 2)) {
+	        //printf("FAILED DECK COUNT\n");
+	        //printFailedState(p, origTest);
+    }
     //testing discarded cards not changed (not until end of turn)
     before = origTest->discardCount[p];
     after = postTest.discardCount[p];

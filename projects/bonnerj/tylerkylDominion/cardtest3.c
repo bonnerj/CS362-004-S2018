@@ -97,12 +97,13 @@ int main() {
     origTest.hand[player1][0] = smithy;
 	origTest.handCount[player1]++;
 
-	//adding 3 cards to deck to draw from
-	for (i=0; i<3; i++)
+	//adding 10 cards to deck to draw from
+	for (i=0; i<10; i++)
 	{
 		origTest.deck[player1][i] = adventurer;
 		origTest.deckCount[player1]++;
 	}
+	
 
 	postTest = origTest;
 

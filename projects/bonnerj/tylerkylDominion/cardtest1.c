@@ -103,7 +103,7 @@ void testSuite(struct gameState *origTest, struct gameState *postTest, int playe
     printDeck(player1, origTest);
 	printf("	Cards in deck before playing adventurer: %d\n", before);
 	after=postTest->deckCount[player1];
-	expected= before - numTreasures;
+	expected= before - numTreasures - nonTreasures;
 	assertTrue(after, expected);
 	printf("	Cards in deck after playing adventurer:\n");
     printDeck(player1, postTest);
@@ -133,7 +133,15 @@ void testSuite(struct gameState *origTest, struct gameState *postTest, int playe
 	before=origTest->coins;
 	printf("	Total coins before playing adventurer: %d\n", before);
 	after=postTest->coins;
-	expected=origTest->coins + numTreasures;
+	if (numTreasures > 1) {
+		expected=origTest->coins + 2;
+	}
+	else if (numTreasures == 1) {
+		expected=origTest->coins + 1;
+	}
+	else {
+		expected = before;
+	}
 	assertTrue(after, expected);
 	printf("	Total coins after playing adventurer:\n");
 	printf("			Expected=%d 	Actual=%d\n\n", expected, after);
@@ -203,7 +211,6 @@ int main() {
 	{
 		origTest.deck[player1][i] = copper;
 		origTest.deckCount[player1]++;
-		origTest.coins++;
 	}
 
 	origTest.hand[player1][0] = adventurer;
@@ -278,7 +285,7 @@ printf( "AND ONLY ADVENTURER IN HAND\n");
 
     //should be 1 card in hand to start; should end in 0 (+0 treasure - 1 adventurer played)	
     //should be 0 cards in discard until turn ends (according to rules) 
-    //should be 1 card in deck to start; should be 1 at end 
+    //should be 1 card in deck to start; should be 0 at end 
     //should be 0 cards in played cards to start; should be 1 at end (adventurer)
     //should be total cars = 2 (none trashed)
     //should be 0 coins to start; should be 0 at end 
