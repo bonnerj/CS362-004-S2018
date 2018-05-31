@@ -51,17 +51,9 @@ int main() {
 
 	test.deckCount[player] = 0;
 
-    //adds garden to hand
-	test.discard[ player ][ test.discardCount[player] ] = gardens;
-    test.discardCount[player]++;
-
-    //adds 10 more cards to hand so that gardens will add to score + 1
-    for (i = 1; i < 10; i++) {
-        test.discard[player][i] = adventurer;
-        test.discardCount[player]++;
-    }
-
-    //printf("Deck count = %d", test.deckCount[player]);
+	test.deck[ player ][ 0 ] = great_hall;
+    test.deckCount[player]++;
+    printf("Deck Count = %d", test.deckCount[player]);
     score=scoreFor(player, &test);
     expected += 1;
     assertTrue(expected, score);

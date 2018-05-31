@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for i in Tarantula_Testing*
+do
+	gcc -o Tarantula $i dominion.c rngs.c -g -Wall -fpic -coverage -lm 
+	./Tarantula
+	gcov -b dominion.c >> ${i}.txt
+	cat dominion.c.gcov >> ${i}.txt
+        make clean
+done

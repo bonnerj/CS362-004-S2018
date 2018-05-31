@@ -29,11 +29,6 @@ runtests: testDrawCard
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
-Tarantula: dominion.o rngs.o Tarantula_Testing_100_estate.c
-	gcc -o Tarantula Tarantula_Testing_100_estate.c dominion.o rngs.o $(CFLAGS)
-	./Tarantula
-	gcov -b dominion.c >> tarantula.out
-	cat dominion.c.gcov >> tarantula.out
 
 player: player.c interface.o
 	gcc -o player player.c -g  dominion.o rngs.o interface.o $(CFLAGS)
