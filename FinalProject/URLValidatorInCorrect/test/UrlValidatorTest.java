@@ -1,4 +1,5 @@
 import junit.framework.TestCase;
+import java.util.*;
 
 //You can use this as a skeleton for your 3 different test approach
 //It is an optional to use this file, you can generate your own test file(s) to test the target function!
@@ -14,33 +15,43 @@ public class UrlValidatorTest extends TestCase {
    
    public void testManualTest()
    {
-	   UrlValidator urlValidator = new UrlValidator(); // to bypass first bug, pass UrlValidator.ALLOW_ALL_SCHEMES option
-	   String test1[] = {"www.google.com", 
-			   "google.com",
-			   "http://www.google.com/", 
-			   "ftp://www.google.com", 
-			   "http://google.com", 
-			   "ftp://google.com", 
-			   "bad://google.com", 
-			   ".com",
-			   "http://www.google.com:1234", 
-			   "http://google.com:1234",
-               "http://www.google.com/path",
-			   "http://www.google.com//path",
-			   "http://www.google.com/path/",
-			   "http://www.google.com/path/query=yes",
-			   "http://google.com/path?query=yes",
-			   "http://google.com/path?&",
-			   "http://www.google.com:1234/path?query=yes",
-			   "http://www.google.com/path?query=yes&.",
-			   "/noScheme/blank space/"};
+	   UrlValidator urlValidator = new UrlValidator();
+	   HashMap< String, Boolean > test1 = new HashMap < String, Boolean >();
+	   test1.put("www.google.com", false);
+	   test1.put("google.com", false);
+	   test1.put("http://www.google.com/", true); 
+	   test1.put("ftp://www.google.com", true); 
+	   test1.put("http://google.com", true);
+	   test1.put("ftp://google.com", true);
+	   test1.put("bad://google.com", false);
+	   test1.put(".com", false);
+	   test1.put("http://www.google.com:1234", true);
+	   test1.put("http://google.com:1234", true);
+	   test1.put("http://www.google.com/path", true);
+	   test1.put( "http://www.google.com//path", false);
+	   test1.put("http://www.google.com/path/", false);
+	   test1.put("http://www.google.com/path/query=yes", false);
+	   test1.put("http://google.com/path?query=yes", true);
+	   test1.put("http://google.com/path?&", false);
+	   test1.put("http://www.google.com:1234/path?query=yes", true);
+	   test1.put("http://www.google.com/path?query=yes&.", false);
+	   test1.put("/noScheme/blank space/", false);
+	   
 		
        System.out.println("Manual Testing...");
-	   for (String url : test1) {
-		   if (urlValidator.isValid(url)) {
-			   System.out.println(url + " is found to be valid");
+	   for (Map.Entry<String, Boolean> entry: test1.entrySet()) {
+		   if (urlValidator.isValid(entry.getKey()) == entry.getValue()) {
+			   if (entry.getValue() == true){
+				   System.out.println(entry.getKey() + " is valid as expected");
+			   }else {
+				   System.out.println(entry.getKey() + " is invalid as expected");
+			   }
 		   } else {
-			   System.out.println(url + " is found to be invalid"); 
+			   if (entry.getValue() == true){
+				   System.out.println(entry.getKey() + " failed test as invalid");
+			   }else {
+				   System.out.println(entry.getKey() + " failed test as valid");
+			   } 
 		   }
 	   }   
 
@@ -48,12 +59,11 @@ public class UrlValidatorTest extends TestCase {
 	   String nullStr = new String();
 	   nullStr = null;
 	   if (urlValidator.isValid(nullStr)) {
-		   System.out.println(nullStr + " is valid");
+		   System.out.println(nullStr + " failed test as valid");
 	   } else {
-		   System.out.println(nullStr + " is invalid"); 
+		   System.out.println(nullStr + " is invalid as expected"); 
 	   }
    }
-   
    
 //You can use this function to implement your First Partition testing
    public void testYourFirstPartition()
@@ -171,8 +181,7 @@ public class UrlValidatorTest extends TestCase {
 			   
 			   //testing authorities with lack of "www"
 			   "oregonstate.edu",
-			   "1.2.3.4",
-			   ""		   
+			   "1.2.3.4"		   
 	   };
 	   
 	   String invalidAuthority[] = {
@@ -214,15 +223,15 @@ public class UrlValidatorTest extends TestCase {
 	   };
 	   
 	   String validPath[] = {
+			   //URLs do not require a path
+			   "",
+			   
 			   //Valid characters in path:  a-z A-Z 0-9 . - _ ~ ! $ & ' ( ) * + , ; = : @
 			   //https://stackoverflow.com/questions/4669692/valid-characters-for-directory-part-of-a-url-for-short-links?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 			   //testing numbers and letters		   
 			   "/path",
 			   "/PATH",
 			   "/0123",
-			   
-			   //URLs do not require a path
-			   "",
 			   
 			   //testing combinations
 			   "/path123",
@@ -341,7 +350,6 @@ public class UrlValidatorTest extends TestCase {
    
    int invalidPortFailed = 0;
    int invalidPortTotal = 0;
-   System.out.println("Invalid Authority Testing...");
 
    // Combinations Of:
    //valid scheme + valid authority + invalid port + valid path + valid query
@@ -361,7 +369,7 @@ public class UrlValidatorTest extends TestCase {
    int invalidPathFailed = 0;
    int invalidPathTotal = 0;
    System.out.println("Invalid Path Testing...");
-   // All Combinations Of:
+   // Combinations Of:
    //valid scheme + valid authority + valid port + invalid path + valid query  
 	for (int n = 0; n < invalidPath.length; n++) {
 				   
