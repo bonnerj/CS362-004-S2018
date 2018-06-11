@@ -279,7 +279,7 @@ public class UrlValidator implements Serializable {
             }
             allowedSchemes = new HashSet<String>(schemes.length);
             for(int i=0; i < schemes.length; i++) {
-                allowedSchemes.add(schemes[i].toUpperCase(Locale.ENGLISH));
+                allowedSchemes.add(schemes[i].toLowerCase(Locale.ENGLISH)); //bug, was toLowerCase
 
             }
         }
@@ -298,6 +298,7 @@ public class UrlValidator implements Serializable {
      * @return true if the url is valid.
      */
     public boolean isValid(String value) {
+    	
         if (value == null) {
             return false;
         }
@@ -307,15 +308,17 @@ public class UrlValidator implements Serializable {
         if (!urlMatcher.matches()) {
             return false;
         }
-
+                     
         String scheme = urlMatcher.group(PARSE_URL_SCHEME);
-        if (!isValidScheme(scheme)) {
-            return false;
+        
+        if (!isValidScheme(scheme)) { //bug all schemes returning false, fixed by using toLowerCase
+        	
+        	return false;
         }
-
+        
+         
         String authority = urlMatcher.group(PARSE_URL_AUTHORITY);
-
-        if ("http".equals(scheme)) {// Special case - file: allows an empty authority
+        if ("http".equals(scheme)) {// Special case - file: allows an empty authority 
             if (authority != null) {
                 if (authority.contains(":")) { // but cannot allow trailing :
                     return false;
@@ -324,15 +327,16 @@ public class UrlValidator implements Serializable {
             // drop through to continue validation
         } else { // not file:
             // Validate the authority
-            if (!isValidAuthority(authority)) {
+            if (!isValidAuthority(authority)) { //bug for non-http schemes
                 return false;
             }
         }
+      
 
-        if (!isValidPath(urlMatcher.group(PARSE_URL_PATH))) {
+        if (!isValidPath(urlMatcher.group(PARSE_URL_PATH))) { 
             return false;
         }
-
+        
         if (!isValidQuery(urlMatcher.group(PARSE_URL_QUERY))) {
             return false;
         }
@@ -354,17 +358,17 @@ public class UrlValidator implements Serializable {
      * @return true if valid.
      */
     protected boolean isValidScheme(String scheme) {
-        if (scheme == null) {
+        
+    	if (scheme == null) {
             return false;
         }
 
-        // TODO could be removed if external schemes were checked in the ctor before being stored
         if (!SCHEME_PATTERN.matcher(scheme).matches()) {
             return false;
         }
 
         if (isOff(ALLOW_ALL_SCHEMES) && !allowedSchemes.contains(scheme.toLowerCase(Locale.ENGLISH))) {
-            return false;
+        	return false;
         }
 
         return true;
@@ -384,17 +388,15 @@ public class UrlValidator implements Serializable {
         if (authority == null) {
             return false;
         }
-
         // check manual authority validation if specified
         if (authorityValidator != null && authorityValidator.isValid(authority)) {
-            return true;
+        	return true;
         }
         // convert to ASCII if possible
-        final String authorityASCII = DomainValidator.unicodeToASCII(authority);
-
+        final String authorityASCII = DomainValidator.unicodeToASCII(authority); 
         Matcher authorityMatcher = AUTHORITY_PATTERN.matcher(authorityASCII);
         if (!authorityMatcher.matches()) {
-            return false;
+        	return false;
         }
 
         // We have to process IPV6 separately because that is parsed in a different group
@@ -411,7 +413,7 @@ public class UrlValidator implements Serializable {
             DomainValidator domainValidator = DomainValidator.getInstance(isOn(ALLOW_LOCAL_URLS));
             if (!domainValidator.isValid(hostLocation)) {
                 // try an IPv4 address
-                InetAddressValidator inetAddressValidator = InetAddressValidator.getInstance();
+                InetAddressValidator inetAddressValidator = InetAddressValidator.getInstance(); //getInstance() returns null
                 if (!inetAddressValidator.isValidInet4Address(hostLocation)) {
                     // isn't IPv4, so the URL is invalid
                     return false;
@@ -432,7 +434,7 @@ public class UrlValidator implements Serializable {
 
         String extra = authorityMatcher.group(PARSE_AUTHORITY_EXTRA);
         if (extra != null && extra.trim().length() > 0){
-            return false;
+        	return false;
         }
 
         return true;
@@ -448,7 +450,7 @@ public class UrlValidator implements Serializable {
             return false;
         }
 
-        if (!PATH_PATTERN.matcher(path).matches()) {
+        if (!PATH_PATTERN.matcher(path).matches()) { //bug
             return false;
         }
 
@@ -545,3 +547,4 @@ public class UrlValidator implements Serializable {
         return URL_PATTERN.matcher(value);
     }
 }
+
